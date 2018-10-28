@@ -2,8 +2,11 @@
 #define NUM_LEDS 8
 #define DATA_PIN 7
 #define CLOCK_PIN 5
-#define DARK_THRESHHOLD 50
+#define DARK_THRESHHOLD 30
 #define ANIM_FRAME 100
+#define COL_R 20
+#define COL_G 200
+#define COL_B 20
 
 int pir = 0;
 int ldr = 0;
@@ -36,6 +39,9 @@ void setup() {
      FastLED.show();
      delay(ANIM_FRAME);   
   }    
+
+  // DEBUG
+  Serial.begin(115200);
 }
 
 void loop() {
@@ -59,7 +65,7 @@ void loop() {
         // to on
         for(int t=0; t<NUM_LEDS; t++){
           for(int i=0; i<t; i++){
-            leds[i].setRGB(random(t*10, 120) / 2, random(t*10, 120), random(t*10, 120));        
+            leds[i].setRGB(random(t*10, COL_R), random(t*10, COL_G), random(t*10, COL_B));        
            }
            FastLED.show();
            delay(ANIM_FRAME);   
@@ -67,7 +73,7 @@ void loop() {
 
         // on
         for(int i=0; i<NUM_LEDS; i++){
-            leds[i].setRGB(white_bright/2, white_bright, white_bright);
+            leds[i].setRGB(COL_R, COL_G, COL_B);
         }
         FastLED.show();
         delay(18000);                          // lights on for about 18 seconds
@@ -75,7 +81,7 @@ void loop() {
         // to off
         for(int t=NUM_LEDS; t>0; t--){
           for(int i=0; i<t; i++){
-            leds[i].setRGB(random(t*10, 120) / 2, random(t*10, 120), random(t*10, 120));        
+            leds[i].setRGB(random(t*10, COL_R), random(t*10, COL_G), random(t*10, COL_B));        
            }
            FastLED.show();
            delay(ANIM_FRAME);   
@@ -89,4 +95,5 @@ void loop() {
         FastLED.show();                        // display current LED settings
         delay(500);                            // otherwise poll PIR sensor at 2 Hertz
       }
+    Serial.println(ldr);
 }
