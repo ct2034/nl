@@ -4,9 +4,6 @@
 #define CLOCK_PIN 5
 #define DARK_THRESHHOLD 30
 #define ANIM_FRAME 100
-#define COL_R 20
-#define COL_G 200
-#define COL_B 20
 
 int pir = 0;
 int ldr = 0;
@@ -61,11 +58,18 @@ void loop() {
       }
       if (pir == 1 && ldr <= DARK_THRESHHOLD ) {          
         digitalWrite(13, LOW);                 // Don't need PIR LED on now
+
+        CHSV chsv(random(0, 255), 255, 255);
+        CRGB crgb(0,0,0);
+        hsv2rgb_rainbow(chsv, crgb);
+        int color_r = crgb[0];
+        int color_g = crgb[1];
+        int color_b = crgb[2];
         
         // to on
         for(int t=0; t<NUM_LEDS; t++){
           for(int i=0; i<t; i++){
-            leds[i].setRGB(random(t*10, COL_R), random(t*10, COL_G), random(t*10, COL_B));        
+            leds[i].setRGB(random(t/NUM_LEDS*color_r, color_r), random(t/NUM_LEDS*color_g, color_g), random(t/NUM_LEDS*color_b, color_b));        
            }
            FastLED.show();
            delay(ANIM_FRAME);   
@@ -73,15 +77,15 @@ void loop() {
 
         // on
         for(int i=0; i<NUM_LEDS; i++){
-            leds[i].setRGB(COL_R, COL_G, COL_B);
+            leds[i].setRGB(color_r, color_g, color_b);
         }
         FastLED.show();
-        delay(18000);                          // lights on for about 18 seconds
+        delay(30000);                          // lights on for about 30 seconds
 
         // to off
         for(int t=NUM_LEDS; t>0; t--){
           for(int i=0; i<t; i++){
-            leds[i].setRGB(random(t*10, COL_R), random(t*10, COL_G), random(t*10, COL_B));        
+            leds[i].setRGB(random(t/NUM_LEDS*color_r, color_r), random(t/NUM_LEDS*color_g, color_g), random(t/NUM_LEDS*color_b, color_b));     
            }
            FastLED.show();
            delay(ANIM_FRAME);   
