@@ -3,12 +3,21 @@
 #define DATA_PIN 7
 #define CLOCK_PIN 5
 #define DARK_THRESHHOLD 30
-#define ANIM_FRAME 100
+#define ANIM_FRAME 10
+#define ANIM_DURATION 2000
+#define LIGHT_DURATION 10000
 
 int pir = 0;
 int ldr = 0;
 int white_bright = 255; // default brightness for white (0-255)
 int buzz_disable = 1;   // change to 1 to switch off initial buzzer
+
+int colors[][3] = {
+    {0, 255, 255}, // cyan
+    {255, 0, 0}    // red
+};
+int current_color = 0;
+int fade_n = ANIM_DURATION / ANIM_FRAME;
 
 CRGBArray<NUM_LEDS> leds;
 
@@ -42,7 +51,7 @@ void setup()
   }
 
   // DEBUG
-  Serial.begin(115200);
+  // Serial.begin(115200);
 }
 
 void loop()
@@ -68,19 +77,18 @@ void loop()
   {
     digitalWrite(13, LOW); // Don't need PIR LED on now
 
-    CHSV chsv(random(0, 255), 255, 255);
-    CRGB crgb(0, 0, 0);
-    hsv2rgb_rainbow(chsv, crgb);
-    int color_r = crgb[0];
-    int color_g = crgb[1];
-    int color_b = crgb[2];
+    int color_r = colors[current_color][0];
+    int color_g = colors[current_color][1];
+    int color_b = colors[current_color][2];
+    current_color = (current_color + 1) % 2;
 
-    // to on
-    for (int t = 0; t < NUM_LEDS; t++)
+    // fade to on
+    for (int t = 0; t < fade_n; t++)
     {
-      for (int i = 0; i < t; i++)
+      float brightness = (float)t / fade_n;
+      for (int i = 0; i < NUM_LEDS; i++)
       {
-        leds[i].setRGB(random(t / NUM_LEDS * color_r, color_r), random(t / NUM_LEDS * color_g, color_g), random(t / NUM_LEDS * color_b, color_b));
+        leds[i].setRGB(color_r * brightness, color_g * brightness, color_b * brightness);
       }
       FastLED.show();
       delay(ANIM_FRAME);
@@ -92,14 +100,15 @@ void loop()
       leds[i].setRGB(color_r, color_g, color_b);
     }
     FastLED.show();
-    delay(30000); // lights on for about 30 seconds
+    delay(LIGHT_DURATION - ANIM_DURATION);
 
-    // to off
-    for (int t = NUM_LEDS; t > 0; t--)
+    // fade to off
+    for (int t = 0; t < fade_n; t++)
     {
-      for (int i = 0; i < t; i++)
+      float brightness = (float)(fade_n - t) / fade_n;
+      for (int i = 0; i < NUM_LEDS; i++)
       {
-        leds[i].setRGB(random(t / NUM_LEDS * color_r, color_r), random(t / NUM_LEDS * color_g, color_g), random(t / NUM_LEDS * color_b, color_b));
+        leds[i].setRGB(color_r * brightness, color_g * brightness, color_b * brightness);
       }
       FastLED.show();
       delay(ANIM_FRAME);
@@ -114,5 +123,5 @@ void loop()
     FastLED.show(); // display current LED settings
     delay(500);     // otherwise poll PIR sensor at 2 Hertz
   }
-  Serial.println(ldr);
+  // Serial.println(ldr);
 }
