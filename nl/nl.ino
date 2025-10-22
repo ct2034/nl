@@ -6,7 +6,7 @@
 #define DARK_THRESHHOLD 30
 #define ANIM_FRAME 10
 #define ANIM_DURATION 2000
-#define LIGHT_DURATION 10000
+#define LIGHT_DURATION 30000
 
 int pir = 0;
 int ldrD7  = 0;
@@ -14,8 +14,10 @@ int white_bright = 255; // default brightness for white (0-255)
 int buzz_disable = 1;   // change to 1 to switch off initial buzzer
 
 int colors_nightlight[][3] = {
-    {0, 255, 255}, // cyan
-    {255, 0, 0}    // red
+    {0, 100, 255}, // blue
+    {0, 255, 0}, // green
+    {255, 255, 0}, // yellow
+    {255, 100, 100} // red
 };
 int colors_disco[][3] = {
     {0, 255, 0},   // green
@@ -93,7 +95,7 @@ void loop()
       int color_r = colors_nightlight[current_color][0];
       int color_g = colors_nightlight[current_color][1];
       int color_b = colors_nightlight[current_color][2];
-      current_color = (current_color + 1) % 2;
+      current_color = (current_color + 1) % 4;
   
       // fade to on
       for (int t = 0; t < fade_n; t++)
